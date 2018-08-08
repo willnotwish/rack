@@ -156,8 +156,6 @@ describe Rack::Multipart do
 
   it "parse multipart upload with text file" do
     env = Rack::MockRequest.env_for("/", multipart_fixture(:text))
-    # env['rack.logger'] = Logger.new( $stdout ).tap { |l| l.level = Logger::DEBUG }
-
     params = Rack::Multipart.parse_multipart(env)
     params["submit-name"].must_equal "Larry"
     params["submit-name-with-content"].must_equal "Berry"
@@ -670,7 +668,6 @@ true\r
       :input => StringIO.new(data) }
 
     env = Rack::MockRequest.env_for("/", e)
-
     params = Rack::Multipart.parse_multipart(env)
     params["submit-name"].must_equal "Larry"
     params["submit-name-with-content"].must_equal "Berry"

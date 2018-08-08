@@ -59,7 +59,7 @@ module Rack
         data[1]
       end
 
-      def self.parse(io, content_length, content_type, tmpfile, bufsize, query_parser)
+      def self.parse(io, content_length, content_type, tmpfile, bufsize, qp)
         return EMPTY if 0 == content_length
 
         boundary = parse_boundary content_type
@@ -68,7 +68,7 @@ module Rack
         io = BoundedIO.new(io, content_length) if content_length
         outbuf = String.new
 
-        parser = new(boundary, tmpfile, bufsize, query_parser)
+        parser = new(boundary, tmpfile, bufsize, qp)
         parser.on_read io.read(bufsize, outbuf)
 
         loop do
@@ -122,7 +122,7 @@ module Rack
 
         include Enumerable
 
-        def initialize(tempfile)
+        def initialize tempfile
           @tempfile = tempfile
           @mime_parts = []
           @open_files = 0
@@ -132,7 +132,7 @@ module Rack
           @mime_parts.each { |part| yield part }
         end
 
-        def on_mime_head(mime_index, head, filename, content_type, name)
+        def on_mime_head mime_index, head, filename, content_type, name
           if filename
             body = @tempfile.call(filename, content_type)
             body.binmode if body.respond_to?(:binmode)
@@ -148,11 +148,11 @@ module Rack
           check_open_files
         end
 
-        def on_mime_body(mime_index, content)
+        def on_mime_body mime_index, content
           @mime_parts[mime_index].body << content
         end
 
-        def on_mime_finish(mime_index)
+        def on_mime_finish mime_index
         end
 
         private
@@ -187,7 +187,7 @@ module Rack
         @head_regex = /(.*?#{EOL})#{EOL}/m
       end
 
-      def on_read(content)
+      def on_read content
         handle_empty_content!(content)
         @sbuf.concat content
         run_parser
