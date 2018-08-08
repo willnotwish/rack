@@ -7,8 +7,6 @@ require 'rack/multipart/parser'
 require 'rack/utils'
 require 'rack/mock'
 
-require 'logger'
-
 describe Rack::Multipart do
   def multipart_fixture(name, boundary = "AaB03x")
     file = multipart_file(name)
@@ -30,21 +28,6 @@ describe Rack::Multipart do
     env = Rack::MockRequest.env_for("/",
             "CONTENT_TYPE" => 'application/x-www-form-urlencoded')
     Rack::Multipart.parse_multipart(env).must_be_nil
-  end
-
-  it "parses a 3Mb payload with many parts (>150) successfully" do
-    begin
-      previous_limit = Rack::Utils.multipart_part_limit
-      Rack::Utils.multipart_part_limit = 0
-
-      payload = multipart_fixture(:many_parts, "----WebKitFormBoundaryAqT5VDDjMSkJDB1t")
-      env = Rack::MockRequest.env_for("/", payload)
-      # env['rack.logger'] = Logger.new( $stdout ).tap { |l| l.level = Logger::DEBUG }
-      params = Rack::Multipart.parse_multipart(env)
-      params["commit"].must_equal "Save Draft"
-    ensure
-      Rack::Utils.multipart_part_limit = previous_limit
-    end
   end
 
   it "parse multipart content when content type present but filename is not" do
@@ -725,7 +708,6 @@ Content-Type: image/png\r
       :input => StringIO.new(data.dup)
     }
     env = Rack::MockRequest.env_for("/", options)
-    # env['rack.logger'] = Logger.new( $stdout ).tap { |l| l.level = Logger::DEBUG }
 
     params = Rack::Multipart.parse_multipart(env)
 
