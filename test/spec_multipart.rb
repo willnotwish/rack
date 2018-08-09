@@ -705,7 +705,6 @@ Content-Type: image/png\r
       :input => StringIO.new(data.dup)
     }
     env = Rack::MockRequest.env_for("/", options)
-
     params = Rack::Multipart.parse_multipart(env)
 
     params["text/plain"].must_equal ["some text", "some more text (I didn't specify Content-Type)"]
