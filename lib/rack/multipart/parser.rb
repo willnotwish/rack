@@ -268,7 +268,7 @@ module Rack
         if @sbuf.check_until(@body_regex) # check but do not advance the pointer yet
           body = @sbuf[1]
           @collector.on_mime_body @mime_index, body
-          @sbuf.pos += body.length + 2 #skip \r\n after the content
+          @sbuf.pos += body.length + 2 # skip \r\n after the content
           @state = :CONSUME_TOKEN
           @mime_index += 1
         else
