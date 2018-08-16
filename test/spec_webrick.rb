@@ -131,18 +131,19 @@ describe Rack::Handler::WEBrick do
                                    Host: '127.0.0.1',
                                    Port: 9210,
                                    Logger: WEBrick::Log.new(nil, WEBrick::BasicLog::WARN),
-                                   AccessLog: [] }) { |server|
+                                   AccessLog: [] }) { |svr|
         puts "In WEBrick run"
-        assert_kind_of WEBrick::HTTPServer, server
-        queue.push(server)
+        assert_kind_of WEBrick::HTTPServer, svr
+        queue.push(svr)
+        puts "End of WEBrick run. Pushed server: #{svr}"
       }
     end
 
     puts "Thread.new called. Result: #{t.inspect}"
-    server = queue.pop
-    puts "Popped server from queue: #{server.class.name}"
-    server.shutdown
-    puts "Called #shutdown on server. About to join thread"
+    local_server = queue.pop
+    puts "Popped server from queue: #{local_server}"
+    local_server.shutdown
+    puts "Called #shutdown on local_server. About to join thread"
     t.join
     puts "Thread joined"
   end
