@@ -144,11 +144,11 @@ describe Rack::Handler::WEBrick do
     puts "Popped server from queue: #{local_server}"
     local_server.shutdown
     puts "Called #shutdown on local_server. About to join thread"
-    t.join
-    puts "Thread joined"
+    joined = t.join(5)
+    puts "Joined result: #{joined || 'timed out'}"
   end
 
-  # it "return repeated headers" do
+      # it "return repeated headers" do
   #   @server.mount "/headers", Rack::Handler::WEBrick,
   #   Rack::Lint.new(lambda { |req|
   #       [
